@@ -42,8 +42,14 @@
 
             <TextBox x:Name="MatchTb" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" 
                      Margin="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
-            <ListBox x:Name="Listbox" Grid.Row="1" Grid.Column="2" MouseDoubleClick="Listbox_MouseDoubleClick" Margin="2"/>
-
+            <ListView x:Name="Listbox" Grid.Row="1" Grid.Column="2" MouseDoubleClick="Listbox_MouseDoubleClick" Margin="2">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="标签" DisplayMemberBinding="{Binding Path=Tag}"/>
+                        <GridViewColumn Header="内容" DisplayMemberBinding="{Binding Path=Content}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </Grid>
     </Grid>
 </Window>
