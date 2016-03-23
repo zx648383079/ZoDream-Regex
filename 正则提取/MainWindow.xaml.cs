@@ -64,9 +64,19 @@ namespace 正则提取
                         else
                         {
                             var key = keys[1];
-                            replace = IsNumberic(key)
-                                ? _matches[int.Parse(keys[0])].Groups[int.Parse(key)].Value
-                                : _matches[int.Parse(keys[0])].Groups[key].Value;
+                            if (IsNumberic(key))
+                            {
+                                int index = 0;
+                                if (!string.IsNullOrWhiteSpace(key))
+                                {
+                                    index = int.Parse(key);
+                                }
+                                replace = _matches[int.Parse(keys[0])].Groups[index].Value;
+                            }
+                            else
+                            {
+                                replace = _matches[int.Parse(keys[0])].Groups[key].Value;
+                            }
                         }
                     }
                     else
