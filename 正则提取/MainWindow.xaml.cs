@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,11 +25,35 @@ namespace 正则提取
         public MainWindow()
         {
             InitializeComponent();
-            Listbox.ItemsSource = _lists;
+        }
+
+        private void _load()
+        {
+            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\regex.txt", FileMode.OpenOrCreate);
+            StreamReader reader = new StreamReader(fs, Encoding.UTF8);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                RegexTb.Items.Add(line);
+            }
+            reader.Close();
+            fs.Close();
+        }
+
+        private void _save()
+        {
+            StreamWriter writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\regex.txt", false,
+                Encoding.UTF8);
+            foreach (var item in RegexTb.Items)
+            {
+                writer.WriteLine(item.ToString());
+            }
+            writer.Close();
         }
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
+            RegexTb.Items.Add(RegexTb.Text);
             _lists.Clear();
             if (string.IsNullOrWhiteSpace(MatchTb.Text)) return;
             _matches = Regex.Matches(MatchTb.Text, RegexTb.Text);
@@ -93,7 +119,7 @@ namespace 正则提取
                             else
                             {
                                 start = int.Parse(nums[0]);
-                                length = Math.Min(length - start, int.Parse(nums[1]));
+                                length = string.IsNullOrWhiteSpace(nums[1]) ? (length - start) : Math.Min(length - start, int.Parse(nums[1]));
                             }
                         }
                         var text = item.Groups[3].Value;
@@ -145,11 +171,19 @@ namespace 正则提取
             AbouLb.Inlines.Add(new Run("for 无参数时输出所有"));
             AbouLb.Inlines.Add(new Italic(new Run("\nfor(10) 一个参数时，从第一个开始输出10个\n")));
             AbouLb.Inlines.Add(new Run("for(1,10) 两个参数时，从第二个开始输出10个"));
+            Listbox.ItemsSource = _lists;
+            ReplaceTb.Text = "{for {} end}";
+            _load();
         }
 
         protected bool IsNumberic(string message)
         {
             return Regex.IsMatch(message, @"^\d*$");
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _save();
         }
     }
 }
