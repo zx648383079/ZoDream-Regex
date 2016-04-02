@@ -29,8 +29,8 @@ namespace 正则提取
 
         private void _load()
         {
-            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\regex.txt", FileMode.OpenOrCreate);
-            StreamReader reader = new StreamReader(fs, Encoding.UTF8);
+            var fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\regex.txt", FileMode.OpenOrCreate);
+            var reader = new StreamReader(fs, Encoding.UTF8);
             string line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -42,11 +42,15 @@ namespace 正则提取
 
         private void _save()
         {
-            StreamWriter writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\regex.txt", false,
+            var list = new string[RegexTb.Items.Count];
+            RegexTb.Items.CopyTo(list, 0);
+            var writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\regex.txt", false,
                 Encoding.UTF8);
-            foreach (var item in RegexTb.Items)
+            var lists = list.ToList().Distinct();
+            foreach (var item in lists)
             {
-                writer.WriteLine(item.ToString());
+                
+                writer.WriteLine(item);
             }
             writer.Close();
         }
@@ -59,7 +63,7 @@ namespace 正则提取
             _matches = Regex.Matches(MatchTb.Text, RegexTb.Text);
             foreach (Match m in _matches)
             {
-                int index = 0;
+                var index = 0;
                 foreach (Group item in m.Groups)
                 {
                     _lists.Add(new MatchItem(index, item.Value));
@@ -72,17 +76,21 @@ namespace 正则提取
         private void Listbox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (_lists.Count < 1) return;
-            var pattern = @"{for(\(([\d,]+)\))?([\s\S]+?)end}|{([\w\.]+?)}";
+            const string pattern = @"{for(\(([\d,]+)\))?([\s\S]+?)end}|{([\w\.]+?)}";
+            //先去除注释
             var content = ReplaceTb.Text;
             Task.Factory.StartNew(() =>
             {
+
+                //先去除注释
+                content = Regex.Replace(content, @"//.*?\n|/\*[\s\S]*?\*/", "");
                 var matches = Regex.Matches(content, pattern);
                 foreach (Match item in matches)
                 {
-                    var replace = string.Empty;
+                    string replace;
                     if (string.IsNullOrWhiteSpace(item.Groups[3].Value))
                     {
-                        string[] keys = item.Groups[4].Value.Split('.');
+                        var keys = item.Groups[4].Value.Split('.');
                         if (keys.Length == 1)
                         {
                             replace = _matches[int.Parse(keys[0])].Value;
@@ -92,7 +100,7 @@ namespace 正则提取
                             var key = keys[1];
                             if (IsNumberic(key))
                             {
-                                int index = 0;
+                                var index = 0;
                                 if (!string.IsNullOrWhiteSpace(key))
                                 {
                                     index = int.Parse(key);
@@ -107,11 +115,11 @@ namespace 正则提取
                     }
                     else
                     {
-                        int start = 0;
-                        int length = _matches.Count;
+                        var start = 0;
+                        var length = _matches.Count;
                         if (!string.IsNullOrWhiteSpace(item.Groups[2].Value))
                         {
-                            string[] nums = item.Groups[2].Value.Split(',');
+                            var nums = item.Groups[2].Value.Split(',');
                             if (nums.Length == 1)
                             {
                                 length = Math.Min(length, int.Parse(nums[0]));
@@ -125,16 +133,16 @@ namespace 正则提取
                         var text = item.Groups[3].Value;
                         var replaces = new StringBuilder();
                         var textMatches = Regex.Matches(text, @"{(\w*?)}");
-                        for (int i = 0; i < length; i++)
+                        for (var i = 0; i < length; i++)
                         {
                             var replacedText = text;
-                            Match itemm = _matches[start + i];
+                            var itemm = _matches[start + i];
                             foreach (Match textMatch in textMatches)
                             {
                                 var key = textMatch.Groups[1].Value;
                                 if (IsNumberic(key))
                                 {
-                                    int index = 0;
+                                    var index = 0;
                                     if (!string.IsNullOrWhiteSpace(key))
                                     {
                                         index = int.Parse(key);
@@ -171,6 +179,7 @@ namespace 正则提取
             AbouLb.Inlines.Add(new Run("for 无参数时输出所有"));
             AbouLb.Inlines.Add(new Italic(new Run("\nfor(10) 一个参数时，从第一个开始输出10个\n")));
             AbouLb.Inlines.Add(new Run("for(1,10) 两个参数时，从第二个开始输出10个"));
+            AbouLb.Inlines.Add(new Run("支持注释// 或/* */ "));
             Listbox.ItemsSource = _lists;
             ReplaceTb.Text = "{for {} end}";
             _load();
@@ -183,7 +192,7 @@ namespace 正则提取
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _save();
+            Task.Factory.StartNew(_save);
         }
     }
 }
