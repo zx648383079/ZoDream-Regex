@@ -77,7 +77,6 @@ namespace 正则提取
         {
             if (_lists.Count < 1) return;
             const string pattern = @"{for(\(([\d,]+)\))?([\s\S]+?)end}|{([\w\.]+?)}";
-            //先去除注释
             var content = ReplaceTb.Text;
             Task.Factory.StartNew(() =>
             {
