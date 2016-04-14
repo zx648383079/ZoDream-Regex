@@ -37,7 +37,6 @@ namespace 正则提取
                 RegexTb.Items.Add(line);
             }
             reader.Close();
-            fs.Close();
         }
 
         private void _save()

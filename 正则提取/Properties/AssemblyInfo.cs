@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("正则提取")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("ZoDream.cn")]
 [assembly: AssemblyProduct("正则提取")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright © ZoDream.cn 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
