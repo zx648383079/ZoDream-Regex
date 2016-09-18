@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
+using ZoDream.Core;
+using ZoDream.Helper.Local;
 using 正则提取.Model;
 
 namespace 正则提取
@@ -20,7 +22,7 @@ namespace 正则提取
     public partial class MainWindow : Window
     {
         private readonly ObservableCollection<MatchItem> _lists = new ObservableCollection<MatchItem>();
-        private MatchCollection _matches;
+        private RegexAnalyze _regex;
 
         public MainWindow()
         {
@@ -48,7 +50,6 @@ namespace 正则提取
             var lists = list.ToList().Distinct();
             foreach (var item in lists)
             {
-                
                 writer.WriteLine(item);
             }
             writer.Close();
@@ -59,106 +60,24 @@ namespace 正则提取
             RegexTb.Items.Add(RegexTb.Text);
             _lists.Clear();
             if (string.IsNullOrWhiteSpace(MatchTb.Text)) return;
-            _matches = Regex.Matches(MatchTb.Text, RegexTb.Text);
-            foreach (Match m in _matches)
+            _regex = new RegexAnalyze(MatchTb.Text, RegexTb.Text);
+            _regex.Match();
+            foreach (Match item in _regex.Matches)
             {
-                var index = 0;
-                foreach (Group item in m.Groups)
-                {
-                    _lists.Add(new MatchItem(index, item.Value));
-                    index ++;
-                }
+                _lists.Add(new MatchItem(item));
             }
+            Listbox.Items.Clear();
+            Listbox.ItemsSource = _lists;
             CountLb.Text = "添加了 " + _lists.Count.ToString(CultureInfo.InvariantCulture) + " 条数据";
         }
 
         private void Listbox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (_lists.Count < 1) return;
-            const string pattern = @"{for(\(([\d,]+)\))?([\s\S]+?)end}|{([\w\.]+?)}";
             var content = ReplaceTb.Text;
             Task.Factory.StartNew(() =>
             {
-
-                //先去除注释
-                content = Regex.Replace(content, @"//.*?\n|/\*[\s\S]*?\*/", "");
-                var matches = Regex.Matches(content, pattern);
-                foreach (Match item in matches)
-                {
-                    string replace;
-                    if (string.IsNullOrWhiteSpace(item.Groups[3].Value))
-                    {
-                        var keys = item.Groups[4].Value.Split('.');
-                        if (keys.Length == 1)
-                        {
-                            replace = _matches[int.Parse(keys[0])].Value;
-                        }
-                        else
-                        {
-                            var key = keys[1];
-                            if (IsNumberic(key))
-                            {
-                                var index = 0;
-                                if (!string.IsNullOrWhiteSpace(key))
-                                {
-                                    index = int.Parse(key);
-                                }
-                                replace = _matches[int.Parse(keys[0])].Groups[index].Value;
-                            }
-                            else
-                            {
-                                replace = _matches[int.Parse(keys[0])].Groups[key].Value;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var start = 0;
-                        var length = _matches.Count;
-                        if (!string.IsNullOrWhiteSpace(item.Groups[2].Value))
-                        {
-                            var nums = item.Groups[2].Value.Split(',');
-                            if (nums.Length == 1)
-                            {
-                                length = Math.Min(length, int.Parse(nums[0]));
-                            }
-                            else
-                            {
-                                start = int.Parse(nums[0]);
-                                length = string.IsNullOrWhiteSpace(nums[1]) ? (length - start) : Math.Min(length - start, int.Parse(nums[1]));
-                            }
-                        }
-                        var text = item.Groups[3].Value;
-                        var replaces = new StringBuilder();
-                        var textMatches = Regex.Matches(text, @"{(\w*?)}");
-                        for (var i = 0; i < length; i++)
-                        {
-                            var replacedText = text;
-                            var itemm = _matches[start + i];
-                            foreach (Match textMatch in textMatches)
-                            {
-                                var key = textMatch.Groups[1].Value;
-                                if (IsNumberic(key))
-                                {
-                                    var index = 0;
-                                    if (!string.IsNullOrWhiteSpace(key))
-                                    {
-                                        index = int.Parse(key);
-                                    }
-                                    replacedText = replacedText.Replace(textMatch.Value, itemm.Groups[index].Value);
-                                }
-                                else
-                                {
-                                    replacedText = replacedText.Replace(textMatch.Value, itemm.Groups[key].Value);
-                                }
-                                //replacedText = replacedText.Replace(textMatch.Value, IsNumberic(key) ? item.Groups[int.Parse(key)].Value : item.Groups[key].Value);
-                            }
-                            replaces.Append(replacedText);
-                        }
-                        replace = replaces.ToString();
-                    }
-                    content = content.Replace(item.Value, replace);
-                }
+                content = _regex.Compiler(content);
                 Dispatcher.Invoke(() =>
                 {
                     var chooseWindow = new ChooseWindow {Content = content};
@@ -169,28 +88,31 @@ namespace 正则提取
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            AbouLb.Inlines.Add(new Bold(new Run("   关于")));
-            AbouLb.Inlines.Add(new Run("\n包含两种用法："));
-            AbouLb.Inlines.Add(new Italic(new Run("")));
-            AbouLb.Inlines.Add(new Run("1.普通输出{} 可以应{1.tt}输出第二个匹配中tt标志的内容"));
-            AbouLb.Inlines.Add(new Italic(new Run("\n2.循环输出{for end}\n")));
-            AbouLb.Inlines.Add(new Run("for 无参数时输出所有"));
-            AbouLb.Inlines.Add(new Italic(new Run("\nfor(10) 一个参数时，从第一个开始输出10个\n")));
-            AbouLb.Inlines.Add(new Run("for(1,10) 两个参数时，从第二个开始输出10个"));
-            AbouLb.Inlines.Add(new Run("支持注释// 或/* */ "));
-            Listbox.ItemsSource = _lists;
-            ReplaceTb.Text = "{for {} end}";
+            //Listbox.ItemsSource = _lists;
+            ReplaceTb.Text = "{for} {} {end}";
             _load();
         }
 
-        protected bool IsNumberic(string message)
-        {
-            return Regex.IsMatch(message, @"^\d*$");
-        }
+        
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Task.Factory.StartNew(_save);
+        }
+
+        private void MatchTb_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.Copy;
+            e.Handled = true;
+        }
+
+        private void MatchTb_PreviewDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var file = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+                MatchTb.Text = Open.Read(file);
+            }
         }
     }
 }

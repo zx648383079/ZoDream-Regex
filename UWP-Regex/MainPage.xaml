@@ -1,0 +1,48 @@
+﻿<Page
+    x:Class="UWP_Regex.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:UWP_Regex"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Pivot x:Name="MainPivot">
+            <PivotItem Header="正文">
+                <TextBox 
+                    x:Name="ContentTb"
+                    AcceptsReturn="True"
+                    AllowDrop="True"
+                    DragOver="ContentTb_DragOver"
+                    Drop="ContentTb_Drop"
+                    TextWrapping="Wrap"/>
+            </PivotItem>
+            <PivotItem Header="匹配结果">
+                <ListBox x:Name="MatchList" 
+                         SelectionChanged="MatchList_SelectionChanged">
+
+                </ListBox>
+            </PivotItem>
+            <PivotItem Header="匹配输出">
+                <TextBox 
+                    x:Name="TemplateTb"
+                    AcceptsReturn="True"
+                    AllowDrop="True"
+                    TextWrapping="Wrap"/>
+            </PivotItem>
+            <PivotItem Header="关于">
+                <StackPanel>
+                    <TextBlock Text="本程序为WPF-Regex UWP版"/>
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
+        <TextBox x:Name="RegexTb" 
+                 Grid.Row="1"
+                 KeyDown="RegexTb_KeyDown"/>
+    </Grid>
+</Page>

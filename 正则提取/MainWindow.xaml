@@ -1,7 +1,18 @@
 ﻿<Window x:Class="正则提取.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="正则提取" Height="350" Width="525" Closing="Window_Closing" Loaded="Window_Loaded" Icon="find.ico" WindowStartupLocation="CenterScreen">
+        Title="正则提取" Height="350" Width="525" 
+        Closing="Window_Closing" 
+        Loaded="Window_Loaded" 
+        Icon="find.ico" 
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Skin/MainSkin.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -13,19 +24,39 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="正则表达式：" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        <TextBlock Text="输出的文字：" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="1" Margin="5"
-                   Grid.Column="0"  Grid.RowSpan="2" />
-        
-        
-        <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto" Width="100" Height="100">
-            <TextBlock x:Name="AbouLb" TextWrapping="Wrap"/>
-        </ScrollViewer>
-        <ComboBox x:Name="RegexTb" Grid.Row="0" Grid.Column="1" FontSize="20" IsEditable="True"/>
-        <Button x:Name="StartBtn" Content="开始" Grid.Row="0" Grid.Column="2" Click="StartBtn_Click"/>
-        <TextBox x:Name="ReplaceTb" Grid.Row="1" Grid.Column="1" Height="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
-        
-        <Grid Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0">
+        <TextBlock Text="正则表达式：" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center" />
+        <TextBlock Text="输出的文字：" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Top" 
+                   Grid.Row="1" 
+                   Margin="5"
+                   Grid.Column="0"  
+                   Grid.RowSpan="2" />
+       
+        <ComboBox x:Name="RegexTb" 
+                  Grid.Row="0" 
+                  Grid.Column="1" 
+                  FontSize="20" 
+                  IsEditable="True"/>
+        <Button x:Name="StartBtn" 
+                Content="开始" 
+                Grid.Row="0" 
+                Grid.Column="2" 
+                Click="StartBtn_Click"/>
+        <TextBox x:Name="ReplaceTb" 
+                 Grid.Row="1" 
+                 Grid.Column="1" 
+                 Grid.ColumnSpan="2"
+                 Height="100" 
+                 TextWrapping="Wrap" 
+                 VerticalScrollBarVisibility="Auto" 
+                 AcceptsReturn="True"/>
+
+        <Grid Grid.Row="2" 
+              Grid.ColumnSpan="3" 
+              Grid.Column="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
@@ -35,21 +66,43 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <GridSplitter Grid.Column="1" Grid.RowSpan="2" Width="2"/>
-            <TextBlock Text="正文：" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" />
-            <TextBlock x:Name="CountLb" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <TextBlock Text="提取列表：" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Grid.Column="2"/>
+            <GridSplitter Grid.Column="1" 
+                          Grid.RowSpan="2" 
+                          Width="2"/>
+            <TextBlock Text="正文：" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center" 
+                       Grid.Row="0" 
+                       Grid.Column="0" />
+            <TextBlock x:Name="CountLb" 
+                       Grid.Row="0" 
+                       Grid.Column="1" 
+                       VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="提取列表：" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center" 
+                       Grid.Row="0" 
+                       Grid.Column="2"/>
 
-            <TextBox x:Name="MatchTb" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" 
-                     Margin="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
-            <ListView x:Name="Listbox" Grid.Row="1" Grid.Column="2" MouseDoubleClick="Listbox_MouseDoubleClick" Margin="2">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="标签" DisplayMemberBinding="{Binding Path=Tag}"/>
-                        <GridViewColumn Header="内容" DisplayMemberBinding="{Binding Path=Content}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <TextBox x:Name="MatchTb" 
+                     AllowDrop="True"
+                     PreviewDragOver="MatchTb_PreviewDragOver"
+                     PreviewDrop="MatchTb_PreviewDrop"
+                     Grid.Row="1" 
+                     Grid.ColumnSpan="2" 
+                     Grid.Column="0" 
+                     Margin="2" 
+                     TextWrapping="Wrap" 
+                     VerticalScrollBarVisibility="Auto" 
+                     AcceptsReturn="True"/>
+            <TreeView x:Name="Listbox" 
+                      Grid.Row="1" 
+                      Grid.Column="2"
+                      MouseDoubleClick="Listbox_MouseDoubleClick"
+                      Margin="2"
+                      >
+            </TreeView>
         </Grid>
     </Grid>
 </Window>
