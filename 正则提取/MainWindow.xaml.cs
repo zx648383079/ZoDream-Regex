@@ -66,7 +66,6 @@ namespace 正则提取
             {
                 _lists.Add(new MatchItem(item));
             }
-            Listbox.Items.Clear();
             Listbox.ItemsSource = _lists;
             CountLb.Text = "添加了 " + _lists.Count.ToString(CultureInfo.InvariantCulture) + " 条数据";
         }
