@@ -38,7 +38,7 @@ namespace ZoDream.Core
         }
 
         public string Compiler(string template) {
-            template = RandomValue(replaceNote(template));
+            template = RandomValue(template);      // 取消注释解析
             var matches = Regex.Matches(template, @"{(for|~)((\d+)?(,(\d+)?)?)?}([\S\s]+?){(end|!)}");
             foreach (Match item in matches)
             {
@@ -74,6 +74,14 @@ namespace ZoDream.Core
 
         /// 包含 ...
         public string IntFor(string content, string tag) {
+            var tags = tag.Split(':');
+            if (tags.Length > 1)
+            {
+                tag = tags[1];
+            } else
+            {
+                tags[0] = "";
+            }
             var mathes = Regex.Matches(tag, @"\d+");
             var start = 0;
             if (mathes.Count > 1) {
@@ -81,13 +89,60 @@ namespace ZoDream.Core
             }
             
             var length = Convert.ToInt32(mathes[mathes.Count - 1].Value);
-            var offset = mathes.Count > 2 ? Convert.ToInt32(mathes[1].Value) : 1;
+            var offset = mathes.Count > 2 ? Convert.ToInt32(mathes[1].Value) - start : 1;
             var arg = new StringBuilder();
             for (int i = start; i <= length; i += offset)
             {
-                arg.Append(content.Replace("{}", i.ToString()));
+                // 增加进制转化及格式化
+                try
+                {
+                    arg.Append(content.Replace("{}", intFormat(i, tags[0])));
+                }
+                catch (Exception)
+                {
+                    tags[0] = ""; //无效参数转为默认
+                    arg.Append(content.Replace("{}", i.ToString()));
+                }
+                
             }
             return arg.ToString();
+        }
+
+        /// <summary>
+        /// 格式化数字
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        protected string intFormat(int arg, string format = "")
+        {
+            if (string.IsNullOrWhiteSpace(format))
+            {
+                return arg.ToString();
+            }
+            if (IsNumberic(format))
+            {
+                return Convert.ToString(arg, Convert.ToInt32(format));
+            }
+            return arg.ToString(format);
+        }
+        
+
+        protected string stringFormat(string arg, string format = null)
+        {
+            if (string.IsNullOrWhiteSpace(format))
+            {
+                return arg;
+            }
+            switch (format[0])
+            {
+                case '+':
+                    var length = Convert.ToInt32(format.Substring(1));
+                    return arg.PadLeft(length, '0');
+                default:
+                    break;
+            }
+            return arg;
         }
 
         // 以 , 分开
