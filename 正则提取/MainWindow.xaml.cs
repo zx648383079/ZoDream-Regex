@@ -57,6 +57,17 @@ namespace 正则提取
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                _startMatch();
+            } catch
+            {
+                CountLb.Text = "您的正则表达式有错误！";
+            }
+        }
+
+        private void _startMatch()
+        {
             RegexTb.Items.Add(RegexTb.Text);
             _lists.Clear();
             if (string.IsNullOrWhiteSpace(MatchTb.Text)) return;
