@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="AboutHeader.Header" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="AboutTb.Text" xml:space="preserve">
+    <value>This program is WPF-Regex UWP version</value>
+  </data>
+  <data name="ContentLabel.Text" xml:space="preserve">
+    <value>text:</value>
+  </data>
+  <data name="CopySuccess" xml:space="preserve">
+    <value>Copy to the pasteboard!</value>
+  </data>
+  <data name="DragTip" xml:space="preserve">
+    <value>Drag and drop here to add files o(^▽^)o</value>
+  </data>
+  <data name="MatchHeader.Header" xml:space="preserve">
+    <value>Match result</value>
+  </data>
+  <data name="MatchLabel.Text" xml:space="preserve">
+    <value>Extract the list:</value>
+  </data>
+  <data name="RegexError" xml:space="preserve">
+    <value>There is an error in your regular expression!</value>
+  </data>
+  <data name="RegexLabel.Text" xml:space="preserve">
+    <value>Regular expression:</value>
+  </data>
+  <data name="ReplaceLabel.Text" xml:space="preserve">
+    <value>Output text:</value>
+  </data>
+  <data name="ResultDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="ResultDialog.SecondaryButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ResultDialog.Title" xml:space="preserve">
+    <value>Whether to copy text</value>
+  </data>
+  <data name="StartBtn.Content" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="TemplateHeader.Header" xml:space="preserve">
+    <value>Output template</value>
+  </data>
+  <data name="HelpDialog.PrimaryButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="HelpDialog.SecondaryButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="HelpDialog.Title" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpLabel.Text" xml:space="preserve">
+    <value>
+    1. {} Direct output defaults to 0, and int can be used. Connect to use the second level content
+
+     2. The for statement
+     {for} or {~} start flag
+         For when there is no parameter, it means loop output all
+         for(n) When a parameter is used, it means to output n total from 0
+         for(m,) When the second parameter defaults, it means to start from m and output all the following
+         For(m,n) with two parameters, it means to start from m and output n total
+     The loop body {} can only be an int or a label, and it no longer supports. Connection. For loops are not currently supported
+     {end} or {!} end flag
+
+     3. Integer loop
+           {1 2 ... 7} Start mark
+           {1 ... 7} Circulate from 1 to 7 and output 1 2 3 4 5 6 7
+           {1,3 ... 7} Circulate from 1 to 7 and each number is separated by 2, which is 1 3 5 7
+           {16:1 2 ... 15} The hexadecimal number cycled from 1 to 15 is output 1 2 ... F
+    
+     {} Value flag
+     {end} or {!} end tag
+    
+     4.{m~n} Output random numbers from m to n</value>
+  </data>
+</root>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -96,7 +97,7 @@ namespace ZoDream.Core
                 // 增加进制转化及格式化
                 try
                 {
-                    arg.Append(content.Replace("{}", intFormat(i, tags[0])));
+                    arg.Append(content.Replace("{}", IntFormat(i, tags[0])));
                 }
                 catch (Exception)
                 {
@@ -114,7 +115,7 @@ namespace ZoDream.Core
         /// <param name="arg"></param>
         /// <param name="format"></param>
         /// <returns></returns>
-        protected string intFormat(int arg, string format = "")
+        protected string IntFormat(int arg, string format = "")
         {
             if (string.IsNullOrWhiteSpace(format))
             {
@@ -128,7 +129,7 @@ namespace ZoDream.Core
         }
         
 
-        protected string stringFormat(string arg, string format = null)
+        protected string StringFormat(string arg, string format = null)
         {
             if (string.IsNullOrWhiteSpace(format))
             {
@@ -163,7 +164,7 @@ namespace ZoDream.Core
                 var temp = content;
                 foreach (Match m in args)
                 {
-                    temp = temp.Replace(m.Value, getMatchValue(item, m.Groups[1].Value));
+                    temp = temp.Replace(m.Value, GetMatchValue(item, m.Groups[1].Value));
                 }
                 arg.Append(temp);
             }
@@ -179,7 +180,7 @@ namespace ZoDream.Core
                 var temp = content;
                 foreach (Match m in args)
                 {
-                    temp = temp.Replace(m.Value, getMatchValue(Matches[start + i], m.Groups[1].Value));
+                    temp = temp.Replace(m.Value, GetMatchValue(Matches[start + i], m.Groups[1].Value));
                 }
                 arg.Append(temp);
             }
@@ -198,7 +199,7 @@ namespace ZoDream.Core
                 if (index >= Matches.Count) {
                     continue;
                 }
-                arg = arg.Replace(item.Value, getMatchValue(Matches[index], item.Groups[3].Value));
+                arg = arg.Replace(item.Value, GetMatchValue(Matches[index], item.Groups[3].Value));
             }
             return arg;
         }
@@ -216,18 +217,38 @@ namespace ZoDream.Core
             return arg;
         }
 
-        protected string replaceNote(string template) { 
+        protected string ReplaceNote(string template) { 
             return Regex.Replace(template, @"//.*?\n|/\*[\s\S]*?\*/", "");
         }
 
-        protected string getMatchValue(Match arg, string tag) {
+        protected string GetMatchValue(Match arg, string tag) {
             if (string.IsNullOrWhiteSpace(tag)) {
                 return arg.Value;
             }
-            if (IsNumberic(tag)) {
-                return arg.Groups[Convert.ToInt32(tag)].Value;
+            var func = string.Empty;
+            if (tag.IndexOf(":") > 0)
+            {
+                var args = tag.Split(':');
+                func = args[0];
+                tag = args[1];
             }
-            return arg.Groups[tag].Value;
+            var val = string.IsNullOrWhiteSpace(tag) ? arg.Value : 
+                IsNumberic(tag) ? arg.Groups[Convert.ToInt32(tag)].Value : arg.Groups[tag].Value;
+            if (string.IsNullOrEmpty(func))
+            {
+                return val;
+            }
+            switch (func)
+            {
+                case "studly":
+                    return ConverterHelper.Studly(val);
+                case "lstudly":
+                    return ConverterHelper.Studly(val, false);
+                case "unstudly":
+                    return ConverterHelper.UnStudly(val);
+                default:
+                    return val;
+            }
         }
 
         public string ReplaceLineBreak(string arg) {

@@ -27,8 +27,7 @@ namespace ZoDream.Core
 
         public string Get(string key, string defaultValue)
         {
-            string arg;
-            if (Parameters.TryGetValue(key, out arg))
+            if (Parameters.TryGetValue(key, out string arg))
             {
                 return arg;
             }
