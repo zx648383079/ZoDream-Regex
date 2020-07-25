@@ -14,6 +14,9 @@
     SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
 
     <Grid>
-        <TextBlock x:Uid="HelpLabel"/>
+        <StackPanel Orientation="Vertical">
+            <TextBlock x:Uid="HelpLabel"/>
+            <HyperlinkButton x:Uid="HelpLink" NavigateUri="https://zodream.cn/blog/id/174" Content="查看更多帮助"/>
+        </StackPanel>
     </Grid>
 </ContentDialog>

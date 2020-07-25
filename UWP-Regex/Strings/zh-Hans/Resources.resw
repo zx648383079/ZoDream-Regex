@@ -163,7 +163,18 @@
     {}           取值标志
     {end} 或者 {!} 结束标志
     
-    4.{m~n} 输出 m到n 的随机数</value>
+    4.{m~n} 输出 m到n 的随机数
+    
+    5. 新增驼峰与下划线转换
+        {studly:}    “ ”、“_”、“-” 为分割符，包括首字母转大写成驼峰写法例如 aa_aa 转成 AaAa
+
+        {lstudly:}   首字母为小写的驼峰写法 例如 aa_aa 转成 aaAa
+        
+        {unstudly:}  驼峰写法转下划线 例如 AaAa 转成 aa_aa
+    </value>
+  </data>
+  <data name="HelpLink.Content" xml:space="preserve">
+    <value>查看更多帮助</value>
   </data>
   <data name="MatchHeader.Header" xml:space="preserve">
     <value>匹配结果</value>
