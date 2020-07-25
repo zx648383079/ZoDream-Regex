@@ -129,5 +129,10 @@ namespace UWP_Regex
             var dialog = new HelpDialog();
             _ = dialog.ShowAsync();
         }
+
+        private void RegexTb_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+
+        }
     }
 }

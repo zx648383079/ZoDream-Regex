@@ -38,14 +38,14 @@
                       Glyph="&#xE82F;" 
                       Tapped="HelpBtn_Tapped"/>
         </StackPanel>
-        <ComboBox x:Name="RegexTb" 
+        <AutoSuggestBox x:Name="RegexTb" 
                   Grid.Row="0" 
                   Grid.Column="1" 
                   FontSize="20"
                   KeyDown="RegexTb_KeyDown"
                   HorizontalAlignment="Stretch"
-                  ItemsSource="{x:Bind ViewModel.Histories, Mode=OneWay}"
-                  IsEditable="True"/>
+                  TextChanged="RegexTb_TextChanged"
+                  ItemsSource="{x:Bind ViewModel.Histories, Mode=OneWay}"/>
         <Button x:Uid="StartBtn" x:Name="StartBtn" 
                 Content="开始" 
                 Grid.Row="0" 
@@ -101,6 +101,7 @@
                       Grid.Row="1" 
                       Grid.Column="2"
                       Margin="2"
+                      MinWidth="150"
                       ItemsSource="{x:Bind ViewModel.MatchItems, Mode=OneWay}" DoubleTapped="MatchList_DoubleTapped"
                       >
             </TreeView>
