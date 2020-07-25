@@ -8,10 +8,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("UWP-Regex")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("zodream")]
 [assembly: AssemblyProduct("UWP-Regex")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright © zodream.cn 2020")]
+[assembly: AssemblyTrademark("zodream")]
 [assembly: AssemblyCulture("")]
 
 // Version information for an assembly consists of the following four values:

@@ -7,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="4430a7c0-3009-486a-937d-6ac287417c78"
-    Publisher="CN=zx648"
+    Name="32626ZoDream.RegexGenerator"
+    Publisher="CN=FF78C939-1E18-4AA8-94E7-1C43CACA4C89"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="4430a7c0-3009-486a-937d-6ac287417c78" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="81f08131-9c66-422b-ab6c-214548225c36" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>UWP-Regex</DisplayName>
-    <PublisherDisplayName>zodream</PublisherDisplayName>
+    <DisplayName>Regex Generator</DisplayName>
+    <PublisherDisplayName>ZoDream</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -42,8 +42,4 @@
       </uap:VisualElements>
     </Application>
   </Applications>
-
-  <Capabilities>
-    <Capability Name="internetClient" />
-  </Capabilities>
 </Package>

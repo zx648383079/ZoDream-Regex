@@ -279,3 +279,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+/UWP-Regex/BundleArtifacts
+/UWP-Regex/Package.StoreAssociation.xml
