@@ -57,6 +57,7 @@
                  Grid.ColumnSpan="2"
                  Height="100" 
                  TextWrapping="Wrap"
+                 KeyDown="AcceptTabTb_KeyDown"
                  AcceptsReturn="True"/>
 
         <Grid Grid.Row="2" 
@@ -96,6 +97,7 @@
                      Grid.Column="0" 
                      Margin="2" 
                      TextWrapping="Wrap"
+                     KeyDown="AcceptTabTb_KeyDown"
                      AcceptsReturn="True"/>
             <TreeView ItemTemplate="{StaticResource TreeViewItemTemplate1}" x:Name="MatchList" 
                       Grid.Row="1" 

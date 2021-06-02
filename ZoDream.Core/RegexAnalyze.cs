@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -39,201 +40,153 @@ namespace ZoDream.Core
         }
 
         public string Compiler(string template) {
-            template = RandomValue(template);      // 取消注释解析
-            var matches = Regex.Matches(template, @"{(for|~)((\d+)?(,(\d+)?)?)?}([\S\s]+?){(end|!)}");
-            foreach (Match item in matches)
-            {
-                template = template.Replace(item.Value, GetForValue(item));
-            }
-            matches = Regex.Matches(template, @"{([^{}]+?)}([\S\s]+?){(end|!)}");
-            foreach (Match item in matches)
-            {
-                var tag = item.Groups[1].Value;
-                var content = item.Groups[2].Value.TrimStart();
-                template = template.Replace(item.Value, tag.IndexOf("...") >= 0 ? IntFor(content, tag) : StringFor(content, tag));
-            }
-            return ReplaceLineBreak(MatchValue(template));
+            var tokenItems = new Tokenizer().Render(template);
+            var builder = new StringBuilder();
+            Compiler(tokenItems, builder);
+            return builder.ToString();
         }
 
-        public string GetForValue(Match item) {
-            var content = item.Groups[6].Value.TrimStart();
-            if (string.IsNullOrEmpty(item.Groups[3].Value)) {
-                if (string.IsNullOrEmpty(item.Groups[5].Value)) {
-                    return MatchFor(content);
-                }
-                return MatchFor(content, Convert.ToInt32(item.Groups[5].Value));
-            }
-            if (!string.IsNullOrEmpty(item.Groups[5].Value)) {
-                return MatchFor(content, Convert.ToInt32(item.Groups[3].Value), Convert.ToInt32(item.Groups[5].Value));
-            }
-            if (string.IsNullOrEmpty(item.Groups[4].Value)) {
-                return MatchFor(content, Convert.ToInt32(item.Groups[3].Value));
-            }
-            var start = Convert.ToInt32(item.Groups[3].Value);
-            return MatchFor(content, start, Matches.Count - start);
-        }
-
-        /// 包含 ...
-        public string IntFor(string content, string tag) {
-            var tags = tag.Split(':');
-            if (tags.Length > 1)
-            {
-                tag = tags[1];
-            } else
-            {
-                tags[0] = "";
-            }
-            var mathes = Regex.Matches(tag, @"\d+");
-            var start = 0;
-            if (mathes.Count > 1) {
-                start = Convert.ToInt32(mathes[0].Value);
-            }
-            
-            var length = Convert.ToInt32(mathes[mathes.Count - 1].Value);
-            var offset = mathes.Count > 2 ? Convert.ToInt32(mathes[1].Value) - start : 1;
-            var arg = new StringBuilder();
-            for (int i = start; i <= length; i += offset)
-            {
-                // 增加进制转化及格式化
-                try
-                {
-                    arg.Append(content.Replace("{}", IntFormat(i, tags[0])));
-                }
-                catch (Exception)
-                {
-                    tags[0] = ""; //无效参数转为默认
-                    arg.Append(content.Replace("{}", i.ToString()));
-                }
-                
-            }
-            return arg.ToString();
-        }
-
-        /// <summary>
-        /// 格式化数字
-        /// </summary>
-        /// <param name="arg"></param>
-        /// <param name="format"></param>
-        /// <returns></returns>
-        protected string IntFormat(int arg, string format = "")
+        public void Compiler(IList<Token> items, StringBuilder builder)
         {
-            if (string.IsNullOrWhiteSpace(format))
+            foreach (var item in items)
             {
-                return arg.ToString();
+                switch (item.Type)
+                {
+                    case TokenType.Text:
+                        builder.Append(item.Content);
+                        break;
+                    case TokenType.For:
+                        CompilerFor(item as BlockToken, builder);
+                        break;
+                    case TokenType.IntFor:
+                        CompilerIntFor(item as BlockToken, builder);
+                        break;
+                    case TokenType.StringFor:
+                        CompilerStringFor(item as BlockToken, builder);
+                        break;
+                    case TokenType.Value:
+                        builder.Append(CompilerValue(item.Content));
+                        break;
+                    case TokenType.Random:
+                        builder.Append(CompilerRandom(item.Content));
+                        break;
+                    case TokenType.Format:
+                        break;
+                    case TokenType.Comment:
+                        break;
+                    default:
+                        break;
+                }
             }
-            if (IsNumberic(format))
-            {
-                return Convert.ToString(arg, Convert.ToInt32(format));
-            }
-            return arg.ToString(format);
         }
-        
 
-        protected string StringFormat(string arg, string format = null)
+        private string SplitFunc(string content, out string func, string defFunc = "")
         {
-            if (string.IsNullOrWhiteSpace(format))
+            var i = content.IndexOf(':');
+            if (i < 0)
             {
-                return arg;
+                func = defFunc;
+                return content;
             }
-            switch (format[0])
-            {
-                case '+':
-                    var length = Convert.ToInt32(format.Substring(1));
-                    return arg.PadLeft(length, '0');
-                default:
-                    break;
-            }
-            return arg;
+            func = content.Substring(0, i);
+            return content.Substring(i + 1);
         }
 
-        // 以 , 分开
-        public string StringFor(string content, string tag) {
-            var args = tag.Split(',');
-            var arg = new StringBuilder();
-            foreach (var item in args) {
-                arg.Append(content.Replace("{}", item));
+        private string SplitTag(string content, out string tag)
+        {
+            var i = content.IndexOf('.');
+            if (i < 0)
+            {
+                tag = string.Empty;
+                return content;
             }
-            return arg.ToString();
+            tag = content.Substring(i + 1);
+            return content.Substring(0, i);
         }
 
-        public string MatchFor(string content) {
-            var arg = new StringBuilder();
-            var args = Regex.Matches(content, @"{([^\.]*?)}");
-            foreach (Match item in Matches)
+        private string CompilerValue(string content)
+        {
+            content = SplitFunc(content, out var func);
+            content = SplitTag(content, out var tag);
+            return FormatGlobalValue(content, func, tag);
+        }
+
+        private string FormatGlobalValue(string content, string func, string tag)
+        {
+            var i = Convert.ToInt32(content);
+            if (i >= Matches.Count)
             {
-                var temp = content;
-                foreach (Match m in args)
+                return "";
+            }
+            return FormatMatchValue(Matches[i], tag, func);
+        }
+
+        private string FormatMatchValue(Match match, string tag, string func)
+        {
+            var val = string.IsNullOrWhiteSpace(tag) ? match.Value :
+                IsNumberic(tag) ? match.Groups[Convert.ToInt32(tag)].Value : match.Groups[tag].Value;
+            return FormatValue(val, func);
+        }
+
+        private void CompilerStringFor(BlockToken item, StringBuilder builder)
+        {
+            var content = SplitFunc(item.Content, out var defFunc);
+            var args = content.Split(',');
+            for (int i = 0; i < args.Length; i++)
+            {
+                FormatBlockInner(item.Children, args[i], i, defFunc, builder);
+            }
+        }
+
+        private void FormatBlockInner(IList<Token> items, object value, int index, string defFunc, StringBuilder builder)
+        {
+            foreach (var token in items)
+            {
+                if (token.Type == TokenType.Text)
                 {
-                    temp = temp.Replace(m.Value, GetMatchValue(item, m.Groups[1].Value));
-                }
-                arg.Append(temp);
-            }
-            return arg.ToString();
-        }
-
-        public string MatchFor(string content, int start, int length) {
-            var arg = new StringBuilder();
-            var args = Regex.Matches(content, @"{([^\.]+)}");
-            length = Math.Min(length, Matches.Count - start);
-            for (int i = 0; i < length; i++)
-            {
-                var temp = content;
-                foreach (Match m in args)
-                {
-                    temp = temp.Replace(m.Value, GetMatchValue(Matches[start + i], m.Groups[1].Value));
-                }
-                arg.Append(temp);
-            }
-            return arg.ToString();
-        }
-
-        public string MatchFor(string content, int length) {
-            return MatchFor(content, 0, length);
-        }
-
-        public string MatchValue(string arg) {
-            var matches = Regex.Matches(arg, @"{(\d+)?(\.(.+))?}");
-            foreach (Match item in matches)
-            {
-                var index = Convert.ToInt32(item.Groups[1].Value);
-                if (index >= Matches.Count) {
+                    builder.Append(token.Content);
                     continue;
                 }
-                arg = arg.Replace(item.Value, GetMatchValue(Matches[index], item.Groups[3].Value));
+                if (token.Type != TokenType.Value)
+                {
+                    continue;
+                }
+                var val = SplitFunc(token.Content, out var func, defFunc);
+                if (func == "index")
+                {
+                    builder.Append(index);
+                    continue;
+                }
+                if (value == null)
+                {
+                    continue;
+                }
+                val = SplitTag(val, out var tag);
+                if ((value is int || value is string)&& !string.IsNullOrWhiteSpace(val))
+                {
+                    builder.Append(FormatGlobalValue(val, func, tag));
+                    continue;
+                }
+                if (value is int)
+                {
+                    builder.Append(FormatIntValue((int)value, func));
+                    continue;
+                }
+                if (value is string)
+                {
+                    builder.Append(FormatValue((string)value, func));
+                    continue;
+                }
+                if (value is Match)
+                {
+                    builder.Append(FormatMatchValue((Match)value, tag, func));
+                    continue;
+                }
             }
-            return arg;
         }
 
-        public string RandomValue(string arg) {
-            var matches = Regex.Matches(arg, @"{(\d+)~(\d+)}");
-            var random = new Random();
-            foreach (Match item in matches)
-            {
-                arg = arg.Replace(item.Value, 
-                    random.Next(Convert.ToInt32(item.Groups[1].Value), 
-                    Convert.ToInt32(item.Groups[2].Value)).ToString()
-                );
-            }
-            return arg;
-        }
-
-        protected string ReplaceNote(string template) { 
-            return Regex.Replace(template, @"//.*?\n|/\*[\s\S]*?\*/", "");
-        }
-
-        protected string GetMatchValue(Match arg, string tag) {
-            if (string.IsNullOrWhiteSpace(tag)) {
-                return arg.Value;
-            }
-            var func = string.Empty;
-            if (tag.IndexOf(":") > 0)
-            {
-                var args = tag.Split(':');
-                func = args[0];
-                tag = args[1];
-            }
-            var val = string.IsNullOrWhiteSpace(tag) ? arg.Value : 
-                IsNumberic(tag) ? arg.Groups[Convert.ToInt32(tag)].Value : arg.Groups[tag].Value;
+        private string FormatValue(string val, string func)
+        {
             if (string.IsNullOrEmpty(func))
             {
                 return val;
@@ -246,9 +199,91 @@ namespace ZoDream.Core
                     return ConverterHelper.Studly(val, false);
                 case "unstudly":
                     return ConverterHelper.UnStudly(val);
-                default:
-                    return val;
             }
+            if (func[0] == '+')
+            {
+                var length = Convert.ToInt32(func.Substring(1));
+                return val.PadLeft(length, '0');
+            }
+            return val;
+        }
+
+        private void CompilerIntFor(BlockToken item, StringBuilder builder)
+        {
+            var content = SplitFunc(item.Content, out var defFunc);
+            var mathes = Regex.Matches(content, @"\d+");
+            var start = 0;
+            if (mathes.Count > 1)
+            {
+                start = Convert.ToInt32(mathes[0].Value);
+            }
+            var length = Convert.ToInt32(mathes[mathes.Count - 1].Value);
+            var offset = mathes.Count > 2 ? Convert.ToInt32(mathes[1].Value) - start : 1;
+            var i = -1;
+            for (; start <= length; start += offset)
+            {
+                i++;
+                FormatBlockInner(item.Children, start, i, defFunc, builder);
+            }
+        }
+
+        private string FormatIntValue(int val, string func)
+        {
+            if (string.IsNullOrWhiteSpace(func))
+            {
+                return val.ToString();
+            }
+            if (IsNumberic(func))
+            {
+                return Convert.ToString(val, Convert.ToInt32(func));
+            }
+            if (func[0] == '+')
+            {
+                return FormatValue(val.ToString(), func);
+            }
+            try
+            {
+                return val.ToString(func);
+            }
+            catch (Exception)
+            {
+                return "{error}";
+            }
+        }
+
+        private void CompilerFor(BlockToken item, StringBuilder builder)
+        {
+            var start = 0;
+            var length = Matches.Count;
+            if (!string.IsNullOrWhiteSpace(item.Content))
+            {
+                var args = item.Content.Split(',');
+                if (args.Length < 2)
+                {
+                    length = Math.Min(Convert.ToInt32(args[0]), Matches.Count);
+                } else
+                {
+                    if (!string.IsNullOrWhiteSpace(args[0]))
+                    {
+                        start = Math.Max(0, Convert.ToInt32(args[0]));
+                    }
+                    if (!string.IsNullOrWhiteSpace(args[1]))
+                    {
+                        length = Math.Min(Convert.ToInt32(args[1]), Matches.Count);
+                    }
+                }
+            }
+            for (; start < length; start ++)
+            {
+                FormatBlockInner(item.Children, Matches[start], start, string.Empty, builder);
+            }
+        }
+
+        private string CompilerRandom(string content)
+        {
+            var random = new Random();
+            var args = content.Split('~');
+            return random.Next(Convert.ToInt32(args[0]), Convert.ToInt32(args[1])).ToString();
         }
 
         public string ReplaceLineBreak(string arg) {

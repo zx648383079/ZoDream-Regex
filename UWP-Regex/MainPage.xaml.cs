@@ -134,5 +134,57 @@ namespace UWP_Regex
         {
 
         }
+
+        private void AcceptTabTb_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if(e.Key == Windows.System.VirtualKey.Tab) {
+                var textBox = (TextBox)e.OriginalSource;
+                var originalStartPosition = textBox.SelectionStart;
+                var startPosition = GetRealStartPositionTakingCareOfNewLines(originalStartPosition, textBox.Text);
+                var beforeText = textBox.Text.Substring(0, startPosition);
+                var afterText = textBox.Text.Substring(startPosition, textBox.Text.Length - startPosition);
+                var tabSpaces = 4;
+                var tab = new string(' ', tabSpaces);
+                textBox.Text = beforeText + tab + afterText;
+                textBox.SelectionStart = originalStartPosition + tabSpaces;
+
+                e.Handled = true;
+            }
+        }
+
+        private int GetRealStartPositionTakingCareOfNewLines(int startPosition, string text)
+        {
+            int newStartPosition = startPosition;
+            int currentPosition = 0;
+            bool previousWasReturn = false;
+            foreach (var character in text)
+            {
+                if (character == '\n')
+                {
+                    if (previousWasReturn)
+                    {
+                        newStartPosition++;
+                    }
+                }
+
+                if (newStartPosition <= currentPosition)
+                {
+                    break;
+                }
+
+                if (character == '\r')
+                {
+                    previousWasReturn = true;
+                }
+                else
+                {
+                    previousWasReturn = false;
+                }
+
+                currentPosition++;
+            }
+
+            return newStartPosition;
+        }
     }
 }

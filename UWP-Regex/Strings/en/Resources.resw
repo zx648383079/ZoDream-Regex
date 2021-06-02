@@ -177,10 +177,10 @@
 
      2. The for statement
      {for} or {~} start flag
-         For when there is no parameter, it means loop output all
-         for(n) When a parameter is used, it means to output n total from 0
-         for(m,) When the second parameter defaults, it means to start from m and output all the following
-         For(m,n) with two parameters, it means to start from m and output n total
+         for when there is no parameter, it means loop output all
+         for:n When a parameter is used, it means to output n total from 0
+         for:m, When the second parameter defaults, it means to start from m and output all the following
+         for:m,n with two parameters, it means to start from m and output n total
      The loop body {} can only be an int or a label, and it no longer supports. Connection. For loops are not currently supported
      {end} or {!} end flag
 
