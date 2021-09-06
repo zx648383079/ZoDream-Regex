@@ -173,6 +173,9 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.12</Version>
     </PackageReference>
+    <PackageReference Include="NETStandard.Library">
+      <Version>2.0.3</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="Strings\en\Resources.resw" />
@@ -181,8 +184,11 @@
     <PRIResource Include="Strings\zh-Hans\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ZoDream.Shared.UWP\ZoDream.Shared.csproj">
-      <Project>{8f30964f-5d66-41d0-83bb-49f3d175787e}</Project>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ZoDream.Shared\ZoDream.Shared.csproj">
+      <Project>{f33735a9-ce02-4dce-a32a-4f2c7be3c8cd}</Project>
       <Name>ZoDream.Shared</Name>
     </ProjectReference>
   </ItemGroup>
