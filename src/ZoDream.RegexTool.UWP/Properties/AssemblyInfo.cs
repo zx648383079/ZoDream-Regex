@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("ZoDream.RegexTool.UWP")]
+[assembly: AssemblyTitle("RegexTool")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HP")]
-[assembly: AssemblyProduct("ZoDream.RegexTool.UWP")]
-[assembly: AssemblyCopyright("Copyright © HP 2021")]
+[assembly: AssemblyCompany("ZoDream")]
+[assembly: AssemblyProduct("ZoDream.RegexTool")]
+[assembly: AssemblyCopyright("Copyright © ZoDream 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

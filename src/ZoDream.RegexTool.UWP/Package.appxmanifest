@@ -9,13 +9,13 @@
   <Identity
     Name="32626ZoDream.RegexGenerator"
     Publisher="CN=FF78C939-1E18-4AA8-94E7-1C43CACA4C89"
-    Version="1.0.0.0" />
+    Version="1.1.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="d5747a4b-602d-42e5-81d7-467450294e7d" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>Regex Generator</DisplayName>
-    <PublisherDisplayName>zodream</PublisherDisplayName>
+    <PublisherDisplayName>ZoDream</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -35,7 +35,7 @@
         DisplayName="Regex Generator"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="ZoDream.RegexTool.UWP"
+        Description="Regex Tool"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
