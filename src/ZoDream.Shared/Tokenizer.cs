@@ -32,6 +32,17 @@ namespace ZoDream.Shared
                     items.Add(ReaderComment(reader));
                     continue;
                 }
+                if (reader.Current == '\\' && reader.NextIs('{'))
+                {
+                    if (reader.ReverseCount('\\') % 2 == 1)
+                    {
+                        builder.Append(reader.Current);
+                        continue;
+                    }
+                    builder.Append("{");
+                    reader.MoveNext();
+                    continue;
+                }
                 if (reader.Current == '{' && checkEnd && reader.NextIs("end}", "!}"))
                 {
                     reader.Position += reader.NextIs('!') ? 2 : 4;

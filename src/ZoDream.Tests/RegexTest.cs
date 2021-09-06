@@ -15,4 +15,15 @@ public class RegexTest
             "} {end}");
         Assert.IsTrue(content.IndexOf("1") > 0);
     }
+
+    [TestMethod]
+    public void TestRender2()
+    {
+        var regex = new RegexAnalyze("aa1222", @"\d");
+        regex.Match();
+        var content = regex.Compiler("{for} {" +
+            "   '\\{{}}'," +
+            "} {end}");
+        Assert.IsTrue(content.IndexOf("\\{") < 0);
+    }
 }

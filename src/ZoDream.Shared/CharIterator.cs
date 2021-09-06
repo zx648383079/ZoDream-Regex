@@ -153,5 +153,37 @@ namespace ZoDream.Shared
             }
             return index;
         }
+
+        /// <summary>
+        /// 反向遍历，不移动当前位置
+        /// </summary>
+        /// <param name="cb"></param>
+        /// <param name="offset">默认从前一个位置开始</param>
+        public void Reverse(Func<char, int, bool?> cb, int offset = -1) {
+            var i = Position + offset;
+            while (i >= 0) {
+                if (cb(Content[i], i) == false) {
+                    break;
+                }
+                i --;
+            }
+        }
+
+        /// <summary>
+        /// 字符是否是上一个字符，并计算连续出现的次数
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public int ReverseCount(char code) {
+            var count = 0;
+            Reverse((i, _) => {
+                if (i != code) {
+                    return false;
+                }
+                count ++;
+                return null;
+            });
+            return count;
+        }
     }
 }
