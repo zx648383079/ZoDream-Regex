@@ -180,7 +180,12 @@ namespace ZoDream.Shared
                 }
                 if (value is Match)
                 {
-                    builder.Append(FormatMatchValue((Match)value, tag, func));
+                    if (string.IsNullOrEmpty(tag))
+                    {
+                        builder.Append(FormatMatchValue((Match)value, val, func));
+                        continue;
+                    }
+                    builder.Append(FormatGlobalValue(val, func, tag));
                     continue;
                 }
             }
